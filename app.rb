@@ -24,10 +24,13 @@ end
 set :database, "sqlite3:lephq.db"
 
 class Post < ActiveRecord::Base
-      validates :content, presence: true, length: { minimum: 2 }
+  has_many :comments
+  validates :content, presence: true, length: { minimum: 2 }
 end
 
 class Comment < ActiveRecord::Base
+  belongs_to :post
+  validates :content, presence: true, length: { minimum: 2 }
 end
 
 get '/' do
@@ -53,21 +56,10 @@ post '/new' do
 
     if @p.save
     redirect to ('/')
-    # erb "<h3>Thank you! You are signed up.</h3>"
   else
     @error = @p.errors.full_messages.first
     erb :new
   end
-  # content = params[:content]
-
-  # if content_empty? content
-  #   @error = 'Type post text'
-  #   return erb :new
-  # end
-
-  # @db.execute 'INSERT INTO Posts (content, created_date) VALUES (?,datetime())', [content]
-
-  # redirect to ('/')
 end
 
 # post '/login/attempt' do
@@ -84,30 +76,39 @@ end
 # get '/secure/place' do
 #   erb 'This is a secret place that only <%=session[:identity]%> has access to!'
 # end
+get '/details/:post_id' do
+  # @comment = Comment.find params[:post_id]
+    @comment = Comment.all
+  # post_id = params[:post_id]
+  # results = @db.execute 'SELECT * FROM Posts WHERE ID = (?)', [post_id]
+  # @row = results[0]
 
-# get '/details/:post_id' do
+  #select comments for the post
+  # @comments = @db.execute 'SELECT * FROM Comments WHERE post_id = ? ORDER BY id', [post_id]
 
-#   post_id = params[:post_id]
-#   results = @db.execute 'SELECT * FROM Posts WHERE ID = (?)', [post_id]
-#   @row = results[0]
+  erb :details
+end
 
-#   #select comments for the post
-#   @comments = @db.execute 'SELECT * FROM Comments WHERE post_id = ? ORDER BY id', [post_id]
 
-#   erb :details
-# end
+post '/details/:post_id' do
+  @c = Comment.new params[:comment]
 
-# post '/details/:post_id' do
+  if @c.save
+    redirect to ('/')
+  else
+    @error = @c.errors.full_messages.first
+    erb :detail
+  end
 
-#   post_id = params[:post_id]
-#   content = params[:content]
+  # post_id = params[:post_id]
+  # content = params[:content]
 
-#   if content_empty? content
-#     @error = 'Type comment text'
-#     redirect to ('/details/' + post_id)
-#   end
+  # if content_empty? content
+  #   @error = 'Type comment text'
+  #   redirect to ('/details/' + post_id)
+  # end
 
-#   @db.execute 'INSERT INTO Comments (content, post_id, created_date) VALUES (?,?,datetime())', [content, post_id]
+  # @db.execute 'INSERT INTO Comments (content, post_id, created_date) VALUES (?,?,datetime())', [content, post_id]
 
-#   redirect to ('/details/' + post_id)
-# end
+  redirect to ('/details/' + post_id)
+end
