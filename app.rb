@@ -77,38 +77,23 @@ end
 #   erb 'This is a secret place that only <%=session[:identity]%> has access to!'
 # end
 get '/details/:post_id' do
-  # @comment = Comment.find params[:post_id]
-    @comment = Comment.all
-  # post_id = params[:post_id]
-  # results = @db.execute 'SELECT * FROM Posts WHERE ID = (?)', [post_id]
-  # @row = results[0]
-
-  #select comments for the post
-  # @comments = @db.execute 'SELECT * FROM Comments WHERE post_id = ? ORDER BY id', [post_id]
-
+  @post = Post.find params[:post_id]
+  @comment = Post.find(params[:post_id]).comments
   erb :details
 end
 
 
 post '/details/:post_id' do
+  post_id = params[:post_id]
+
   @c = Comment.new params[:comment]
+  @c.post_id = post_id
 
   if @c.save
-    redirect to ('/')
+    redirect to ('/details/' + post_id)
   else
     @error = @c.errors.full_messages.first
-    erb :detail
+    redirect to ('/details/' + post_id)
   end
 
-  # post_id = params[:post_id]
-  # content = params[:content]
-
-  # if content_empty? content
-  #   @error = 'Type comment text'
-  #   redirect to ('/details/' + post_id)
-  # end
-
-  # @db.execute 'INSERT INTO Comments (content, post_id, created_date) VALUES (?,?,datetime())', [content, post_id]
-
-  redirect to ('/details/' + post_id)
 end
