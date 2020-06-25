@@ -20,7 +20,7 @@ GEM
     minitest (5.12.2)
     multi_json (1.13.1)
     mustermann (1.0.3)
-    rack (2.0.7)
+    rack (2.2.3)
     rack-protection (2.0.7)
       rack
     rack-test (0.6.3)
@@ -61,6 +61,7 @@ GEM
     zeitwerk (2.1.10)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
